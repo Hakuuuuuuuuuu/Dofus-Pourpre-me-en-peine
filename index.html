@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Âme en peine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Une seule colonne de travail: saisie en haut, ordres au milieu, carte en bas. */
+  --bg: #14110c;
+  --panel: #1e1a13;
+  --panel-2: #29231a;
+  --line: #3d3425;
+  --ink: #f3e9d2;
+  --mute: #a99d84;
+  --sand: #e6b84f;
+  --go: #8fd16f;
+  --bad: #e2674d;
+  --sang: #e8806f;
+  --sel: #8fc4e8;
+  --or: #e6b84f;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.4; }
+body { padding: 16px; }
+main { max-width: 760px; margin: 0 auto; display: grid; gap: 14px; }
+h1 { font-family: var(--display); font-size: 30px; letter-spacing: .02em; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-size: 20px; letter-spacing: .04em; text-transform: uppercase; color: var(--sand); margin: 0 0 8px; }
+p { margin: 0; }
+.sub { color: var(--mute); }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.stepper { display: inline-flex; align-items: center; gap: 6px; }
+.stepper b { min-width: 28px; text-align: center; font-size: 20px; font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--sand); outline-offset: 2px; }
+.sq { width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); font-size: 20px; }
+.sq:hover { border-color: var(--sand); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; }
+
+.col.past { opacity: .4; }
+.col .st { padding: 7px 0; font-size: 14px; }
+.col { padding: 5px; gap: 4px; }
+.col .h b { font-size: 19px; }
+.o.sm { padding: 3px 12px; }
+.o.sm .n b { font-size: 22px; }
+.o.sm .a { font-size: 28px; }
+.o.sm .t { font-size: 18px; }
+.o.sm .t small { display: none; }
+.o.sm .t .exp { font-size: 12px; margin-top: 0; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.col { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px; display: grid; gap: 5px; }
+.col.active { border-color: var(--sand); }
+.col .h { text-align: center; line-height: 1.1; }
+.col .h b { font-family: var(--display); font-size: 22px; display: block; }
+.col .h span { font-size: 12px; color: var(--mute); }
+.st { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); padding: 10px 0; font-weight: 600; font-size: 15px; }
+.st[data-s="Sang"].on { background: var(--sang); color: #1b0f0c; border-color: var(--sang); }
+.st[data-s="Sel"].on { background: var(--sel); color: #0c1822; border-color: var(--sel); }
+.st[data-s="Or"].on { background: var(--or); color: #211806; border-color: var(--or); }
+.note { font-size: 14px; color: var(--mute); }
+.warn { color: var(--bad); }
+.orders { display: grid; gap: 6px; }
+.o { display: grid; grid-template-columns: 92px 70px 1fr; gap: 10px; align-items: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; }
+.o:first-child { border-color: var(--sand); }
+.o .n { font-family: var(--display); font-size: 17px; color: var(--mute); line-height: 1; }
+.o .n b { display: block; font-size: 34px; color: var(--ink); }
+.o .a { font-size: 44px; line-height: 1; text-align: center; }
+.o .t { font-family: var(--display); font-size: 24px; letter-spacing: .03em; }
+.o .t small { display: block; font-family: var(--body); font-size: 13px; color: var(--mute); letter-spacing: 0; }
+.o.rapide .t { color: var(--sand); }
+.mode { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.mode button { padding: 8px 14px; background: var(--panel-2); border: 0; }
+.mode button[aria-pressed="true"] { background: var(--sand); color: #211806; font-weight: 600; }
+textarea { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.15; background: #100d09; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; resize: vertical; }
+svg { width: 100%; height: auto; display: block; background: #100d09; border-radius: 8px; border: 1px solid var(--line); }
+svg .cell { cursor: pointer; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); }
+.btn:hover { border-color: var(--sand); }
+.btn.main { background: var(--sand); color: #211806; font-weight: 600; border-color: var(--sand); }
+details summary { cursor: pointer; font-family: var(--display); font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--sand); }
+select { font: inherit; background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.corners { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; max-width: 360px; }
+.corners label { display: grid; gap: 3px; font-size: 13px; color: var(--mute); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--mute); margin-top: 8px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.chk { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 15px; }
+.chk b.exp { font-size: 18px; color: var(--sand); }
+.chk .pick { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: middle; }
+.chk .pick button { border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; background: var(--panel); font-weight: 600; }
+.chk .pick button.on { background: var(--sand); color: #211806; border-color: var(--sand); }
+.o .t .exp { display: block; font-family: var(--body); font-size: 13px; color: var(--sand); letter-spacing: 0; margin-top: 2px; }
+.o.now { border-color: var(--sand); box-shadow: 0 0 0 1px var(--sand) inset; }
+.alt { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.alt button { min-width: 54px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); font-size: 20px; }
+.alt button:hover { border-color: var(--sand); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Âme en peine: plan de route</h1>
+    <p class="sub">Clique l'état de chaque tour. Les ordres s'affichent par numéro de compteur.</p>
+  </header>
+
+  <section aria-labelledby="h-liste">
+    <h2 id="h-liste">1. Quel état à quel tour</h2>
+    <p class="note" style="margin-bottom:10px">Survole <b>toutes</b> les lignes de « Effets déclenchés » (jusqu'à 50): l'infobulle indique « dans N ». Sous la colonne « dans N », clique l'état de cette ligne. Fais-le au compteur 2, tu as 2 minutes.</p>
+    <div class="grid" id="grid"></div>
+    <p class="note" id="gridnote" style="margin-top:8px"></p>
+  </section>
+
+  <section aria-labelledby="h-ordres">
+    <h2 id="h-ordres">2. Tes ordres</h2>
+    <div class="chk" id="chk" hidden></div>
+    <div class="orders" id="orders"></div>
+    <p class="note" id="ordnote" style="margin-top:10px"></p>
+    <div class="actions" style="margin-top:10px">
+      <button class="btn main" id="done" type="button">Joué ✓</button>
+      <button class="btn" id="undo" type="button">Annuler le dernier coup</button>
+    </div>
+    <details style="margin-top:10px">
+      <summary>J'ai joué autre chose</summary>
+      <div class="alt" id="alt">
+        <button type="button" data-a="NW" aria-label="Gauche, vers le haut à gauche">↖</button>
+        <button type="button" data-a="NE" aria-label="Droite, vers le haut à droite">↗</button>
+        <button type="button" data-a="SW" aria-label="Recule en bas à gauche">↙</button>
+        <button type="button" data-a="SE" aria-label="Recule en bas à droite">↘</button>
+        <button type="button" data-a="PASSE" style="font-size:15px">PASSE</button>
+      </div>
+    </details>
+    <div class="actions" style="margin-top:12px">
+      <button class="btn" id="next" type="button">Nouvelle liste: plus aucun état connu</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-carte">
+    <h2 id="h-carte">3. Carte</h2>
+    <div class="row" style="margin-bottom:10px">
+      <div class="mode" role="group" aria-label="Clic sur la carte">
+        <button type="button" id="m-pos" aria-pressed="true">Ma case</button>
+        <button type="button" id="m-wall" aria-pressed="false">Mur vu</button>
+        <button type="button" id="m-edit" aria-pressed="false">Éditer la carte</button>
+      </div>
+      <span class="stepper">Compteur <button class="sq" id="c-" type="button" aria-label="Compteur moins">−</button><b id="cv">2</b><button class="sq" id="c+" type="button" aria-label="Compteur plus">+</button></span>
+      <span class="stepper" title="Chiffre affiché sur le sort Déplacement rapide, 0 s'il est prêt">Rapide dans <button class="sq" id="d-" type="button" aria-label="Rapide moins">−</button><b id="dv">0</b><button class="sq" id="d+" type="button" aria-label="Rapide plus">+</button></span>
+    </div>
+    <div id="editbox" hidden style="margin-bottom:10px">
+      <p class="note">Clique une case pour la passer de sol à vide (et inversement). Les piliers (cases en pointillés) sont aussi modifiables. Ta modification est gardée dans ce navigateur.</p>
+      <textarea id="mapTxt" rows="8" spellcheck="false" aria-label="Carte en texte"></textarea>
+      <div class="actions" style="margin-top:8px">
+        <button class="btn" id="mt-apply" type="button">Appliquer le texte</button>
+        <button class="btn" id="mt-copy" type="button">Copier</button>
+        <button class="btn" id="mt-orig" type="button">Revenir à la carte d'origine</button>
+      </div>
+    </div>
+    <svg id="map" viewBox="0 0 792 400" role="img" aria-label="Carte du labyrinthe"></svg>
+    <div class="legend">
+      <span><i style="background:#4aa3e8"></i>Ta case</span>
+      <span><i style="background:#8fd16f"></i>Sortie</span>
+      <span><i style="background:#e2674d"></i>Mur prévu</span>
+      <span><i style="background:#7a5a2e"></i>Mur vu</span>
+      <span><i style="background:#f3e9d2"></i>Ton chemin</span>
+      <span><i style="background:#0b0906;border:1px solid #6b5c3e"></i>Vide (trou)</span>
+    </div>
+    <p class="note" style="margin-top:8px">Si tu as dévié: règle le compteur, clique ta vraie case (« Ma case »), clique les cubes vus (« Mur vu »), puis renseigne les états « dans N » de ce compteur.</p>
+    <details style="margin-top:12px">
+      <summary>Statues au départ</summary>
+      <p class="note" style="margin-top:6px">Position actuelle de chaque golem dans les 4 coins de l'écran. Par défaut c'est la disposition du début de combat.</p>
+      <div class="corners" id="corners"></div>
+      <div class="actions" style="margin-top:10px"><button class="btn" id="reset" type="button">Tout remettre au départ</button></div>
+    </details>
+  </section>
+</main>
+
+<script>
+const N = 19, GOAL = 18 * N + 18, CDLEN = 10;
+const DNAMES = ['NE', 'NW', 'SE', 'SW'];
+const DV = { NE: [1, 0], NW: [0, 1], SE: [0, -1], SW: [-1, 0] };
+const ARROW = { NE: '↗', NW: '↖', SE: '↘', SW: '↙' };
+const CW = { TL: 'SE', TR: 'SW', BL: 'NE', BR: 'NW' };
+let Fset = new Set();
+function setFloor(list) { Fset = new Set(list.map(s => { const [a, b] = s.split(',').map(Number); return a * N + b; })); }
+function inF(a, b) { return a >= 0 && b >= 0 && a < N && b < N && Fset.has(a * N + b); }
+
+function fireArr(arr, state) {
+  let c = null, sc = null;
+  for (const k in arr) { if (arr[k] === state) c = k; if (arr[k] === 'Sec') sc = k; }
+  const n = Object.assign({}, arr); n[c] = 'Sec'; n[sc] = state;
+  return [CW[c], n, c];
+}
+function dist(p, walls) {
+  const g = GOAL, s = p[0] * N + p[1];
+  if (s === g) return 0;
+  const seen = new Set([s]); let q = [s], k = 0;
+  while (q.length) {
+    k++; const nq = [];
+    for (const c of q) {
+      const a = (c / N) | 0, b = c % N;
+      for (const d of DNAMES) {
+        const x = a + DV[d][0], y = b + DV[d][1];
+        if (!inF(x, y)) continue;
+        const id = x * N + y;
+        if (seen.has(id) || walls.includes(id)) continue;
+        if (id === g) return k;
+        seen.add(id); nq.push(id);
+      }
+    }
+    q = nq;
+  }
+  return 999;
+}
+function addWall(w, p, wd) {
+  const x = p[0] + DV[wd][0], y = p[1] + DV[wd][1];
+  if (!inF(x, y)) return [w, null];
+  const id = x * N + y;
+  if (w.includes(id)) return [w, null];
+  return [w.concat([id]).sort((u, v) => u - v), [x, y]];
+}
+// start: [a,b]; walls: int[]; arr: corner->golem; fires: string[]; cd: int
+function staticDist() {
+  const d = new Map([[GOAL, 0]]); let q = [GOAL];
+  while (q.length) {
+    const nq = [];
+    for (const c of q) {
+      const a = (c / N) | 0, b = c % N;
+      for (const k of DNAMES) {
+        const x = a + DV[k][0], y = b + DV[k][1];
+        if (!inF(x, y)) continue;
+        const id = x * N + y;
+        if (!d.has(id)) { d.set(id, d.get(c) + 1); nq.push(id); }
+      }
+    }
+    q = nq;
+  }
+  return d;
+}
+const BEAM = 5000;
+function* planGen(start, walls0, arr0, fires, cd0) {
+  const SD = staticDist();
+  const arrAt = [arr0], wdAt = [];
+  for (const f of fires) { const [wd, na] = fireArr(arrAt[arrAt.length - 1], f); wdAt.push(wd); arrAt.push(na); }
+  let layer = new Map();
+  const w0 = walls0.slice().sort((u, v) => u - v);
+  layer.set(start.join() + '|' + w0.join() + '|' + cd0, { p: start, w: w0, c: cd0, prev: null, act: null });
+  let used = 0;
+  for (let i = 0; i < fires.length; i++) {
+    used = i + 1;
+    const next = new Map(), wd = wdAt[i];
+    for (const node of layer.values()) {
+      const p = node.p, w = node.w, c = node.c;
+      const opts = [{ act: 'PASSE', p: p, c: Math.max(c - 1, 0) }];
+      for (const d of DNAMES) {
+        const x = p[0] + DV[d][0], y = p[1] + DV[d][1];
+        if (!inF(x, y) || w.includes(x * N + y)) continue;
+        opts.push({ act: d, p: [x, y], c: Math.max(c - 1, 0) });
+        if (c === 0) {
+          for (const d2 of DNAMES) {
+            const x2 = x + DV[d2][0], y2 = y + DV[d2][1];
+            if (!inF(x2, y2) || w.includes(x2 * N + y2) || (x2 === p[0] && y2 === p[1])) continue;
+            opts.push({ act: 'RAPIDE', dirs: [d, d2], p: [x2, y2], c: CDLEN - 1 });
+          }
+        }
+      }
+      for (const o of opts) {
+        const [w2, tgt] = addWall(w, o.p, wd);
+        const key = o.p.join() + '|' + w2.join() + '|' + o.c;
+        if (!next.has(key)) next.set(key, { p: o.p, w: w2, c: o.c, prev: node, act: o.act, dirs: o.dirs, wd: wd, tgt: tgt });
+      }
+    }
+    if (next.size > BEAM) {
+      const arr = [...next.entries()].map(([k, n]) => [SD.has(n.p[0] * N + n.p[1]) ? SD.get(n.p[0] * N + n.p[1]) : 999, k, n]);
+      arr.sort((u, v) => u[0] - v[0]);
+      layer = new Map(arr.slice(0, BEAM).map(e => [e[1], e[2]]));
+    } else layer = next;
+    yield i;
+    let atGoal = false;
+    for (const nd of layer.values()) if (nd.p[0] * N + nd.p[1] === GOAL) { atGoal = true; break; }
+    if (atGoal) break;
+  }
+  const final = arrAt[used];
+  let sc = null;
+  for (const k in final) if (final[k] === 'Sec') sc = k;
+  const possible = ['TL', 'TR', 'BL', 'BR'].filter(k => k !== sc).map(k => CW[k]);
+  let best = null;
+  const cand = [];
+  let dmin = 999;
+  for (const node of layer.values()) {
+    const d0 = dist(node.p, node.w);
+    if (d0 >= 999) continue;
+    node.d0 = d0; if (d0 < dmin) dmin = d0; cand.push(node);
+  }
+  let cnt = 0;
+  for (const node of cand) {
+    const d0 = node.d0;
+    if (d0 > dmin + 1) continue;
+    if (++cnt % 150 === 0) yield cnt;
+    let worst = 0;
+    for (const wd of possible) {
+      let br = 999;
+      for (const d of [null].concat(DNAMES)) {
+        let n = node.p;
+        if (d) {
+          n = [node.p[0] + DV[d][0], node.p[1] + DV[d][1]];
+          if (!inF(n[0], n[1]) || node.w.includes(n[0] * N + n[1])) continue;
+        }
+        const [w2] = addWall(node.w, n, wd);
+        br = Math.min(br, dist(n, w2) + (d ? 0 : 1));
+      }
+      worst = Math.max(worst, br);
+    }
+    const score = [d0, worst, -node.c];
+    if (!best || score[0] < best.score[0] || (score[0] === best.score[0] && (score[1] < best.score[1] || (score[1] === best.score[1] && score[2] < best.score[2])))) best = { score, node };
+  }
+  if (!best) return null;
+  const steps = [];
+  for (let n = best.node; n.prev; n = n.prev) steps.push({ act: n.act, dirs: n.dirs, p: n.p, wd: n.wd, tgt: n.tgt, from: n.prev.p });
+  steps.reverse();
+  return { score: best.score, steps, final: best.node, arr: final };
+}
+
+function plan(start, walls0, arr0, fires, cd0) {
+  const g = planGen(start, walls0, arr0, fires, cd0);
+  let r; do { r = g.next(); } while (!r.done);
+  return r.value;
+}
+
+const ORIG = ["0,1", "0,2", "0,3", "0,4", "0,5", "0,6", "0,7", "0,8", "0,9", "0,10", "0,11", "0,12", "0,13", "0,14", "1,0", "1,1", "1,2", "1,4", "1,6", "1,10", "1,12", "1,13", "1,14", "2,0", "2,1", "2,2", "2,3", "2,4", "2,6", "2,7", "2,8", "2,9", "2,10", "2,12", "2,13", "2,14", "2,15", "3,0", "3,4", "3,6", "3,8", "3,10", "3,12", "3,14", "3,16", "4,0", "4,1", "4,2", "4,3", "4,4", "4,5", "4,6", "4,7", "4,8", "4,9", "4,10", "4,11", "4,12", "4,13", "4,14", "4,15", "4,16", "4,17", "5,0", "5,2", "5,4", "5,6", "5,10", "5,12", "5,16", "6,0", "6,2", "6,3", "6,4", "6,5", "6,6", "6,7", "6,8", "6,10", "6,12", "6,13", "6,16", "6,17", "6,18", "7,0", "7,2", "7,6", "7,8", "7,10", "7,12", "7,14", "7,16", "8,0", "8,1", "8,2", "8,3", "8,4", "8,5", "8,6", "8,8", "8,9", "8,10", "8,11", "8,12", "8,14", "8,15", "8,16", "8,17", "8,18", "9,0", "9,2", "9,4", "9,6", "9,10", "9,12", "9,14", "9,18", "10,0", "10,1", "10,2", "10,4", "10,6", "10,7", "10,8", "10,9", "10,10", "10,12", "10,13", "10,14", "10,15", "10,16", "10,17", "11,0", "11,4", "11,6", "11,8", "11,12", "11,14", "11,16", "12,0", "12,1", "12,2", "12,3", "12,4", "12,5", "12,6", "12,8", "12,9", "12,10", "12,11", "12,12", "12,14", "12,16", "12,17", "13,0", "13,1", "13,2", "13,4", "13,6", "13,8", "13,12", "13,14", "13,18", "14,0", "14,1", "14,2", "14,3", "14,4", "14,6", "14,7", "14,8", "14,9", "14,10", "14,11", "14,12", "14,13", "14,14", "14,15", "14,16", "14,17", "14,18", "15,2", "15,3", "15,4", "15,6", "15,10", "15,12", "15,16", "15,18", "16,4", "16,5", "16,6", "16,7", "16,8", "16,10", "16,11", "16,12", "16,13", "16,14", "16,15", "16,16", "16,18", "17,6", "17,8", "17,14", "17,16", "17,18", "18,6", "18,7", "18,8", "18,9", "18,12", "18,13", "18,14", "18,15", "18,16", "18,17", "18,18"];
+setFloor(ORIG);
+const CNAME = { TL: 'Haut gauche', TR: 'Haut droite', BL: 'Bas gauche', BR: 'Bas droite' };
+const START_ARR = { TL: 'Sec', TR: 'Sel', BL: 'Or', BR: 'Sang' };
+const NS = 50;
+const st = { c0: 2, cd: 0, pos: [0, 1], walls: [], arr: Object.assign({}, START_ARR), tl: Array(NS).fill(null), hist: [], mode: 'pos', last: null };
+const $ = id => document.getElementById(id);
+
+// carte isométrique: a = vers le haut-droite, b = vers le haut-gauche
+const U = 20, V = 10, PADX = 16, PADY = 12;
+const SX = (a, b) => PADX + 18 * U + (a - b) * U;
+const SY = (a, b) => PADY + (36 - (a + b)) * V + V;
+const poly = (a, b, k = 1) => { const x = SX(a, b), y = SY(a, b); return `${x},${y - V * k} ${x + U * k},${y} ${x},${y + V * k} ${x - U * k},${y}`; };
+
+function wordFor(s) {
+  if (s.act === 'PASSE') return ['PASSE', 'ne bouge pas', ''];
+  if (s.act === 'RAPIDE') return ['RAPIDE', 'Déplacement rapide, puis ' + ARROW[s.dirs[0]] + ' puis ' + ARROW[s.dirs[1]], 'rapide'];
+  const w = { NE: 'DROITE', NW: 'GAUCHE', SE: 'RECULE', SW: 'RECULE' }[s.act];
+  const sub = { NE: 'vers le haut à droite', NW: 'vers le haut à gauche', SE: 'recule en bas à droite', SW: 'recule en bas à gauche' }[s.act];
+  return [w, sub, ''];
+}
+
+function buildGrid() {
+  const g = $('grid'); g.innerHTML = '';
+  for (let i = 0; i < NS; i++) {
+    const col = document.createElement('div'); col.className = 'col'; col.dataset.i = i;
+    col.innerHTML = `<div class="h"><b>${st.c0 + i}</b><span>dans ${i + 1}</span></div>` +
+      ['Sang', 'Sel', 'Or'].map(s => `<button type="button" class="st" data-i="${i}" data-s="${s}" aria-pressed="false">${s}</button>`).join('');
+    g.appendChild(col);
+  }
+  g.onclick = e => {
+    const b = e.target.closest('.st'); if (!b) return;
+    const i = +b.dataset.i, s = b.dataset.s;
+    st.tl[i] = st.tl[i] === s ? null : s; render(true);
+  };
+}
+
+function buildCorners() {
+  const c = $('corners'); c.innerHTML = '';
+  for (const k of ['TL', 'TR', 'BL', 'BR']) {
+    const l = document.createElement('label'); l.textContent = CNAME[k];
+    const sel = document.createElement('select'); sel.id = 'k-' + k;
+    for (const v of ['Sec', 'Sang', 'Sel', 'Or']) { const o = document.createElement('option'); o.value = v; o.textContent = v === 'Sec' ? 'Séculaire (gris)' : v; sel.appendChild(o); }
+    sel.value = st.arr[k];
+    sel.onchange = () => { st.arr[k] = sel.value; render(); };
+    l.appendChild(sel); c.appendChild(l);
+  }
+}
+
+function drawMap(res, cur, base) {
+  let h = '';
+  const planned = new Map();
+  if (res) res.steps.forEach((s, i) => { if (s.tgt) planned.set(s.tgt[0] * N + s.tgt[1], base + i); });
+  const edit = st.mode === 'edit';
+  for (let a = 0; a < N; a++) for (let b = 0; b < N; b++) {
+    const pillar = a % 2 === 1 && b % 2 === 1;
+    const id = a * N + b;
+    if (!Fset.has(id)) {
+      if (edit) h += `<polygon class="cell" data-a="${a}" data-b="${b}" points="${poly(a, b, .94)}" fill="#0b0906" stroke="#6b5c3e" stroke-width=".8" ${pillar ? 'stroke-dasharray="2 2"' : ''}><title>${a},${b}</title></polygon>`;
+      else if (!pillar) h += `<polygon points="${poly(a, b, .9)}" fill="#0b0906"/>`;
+      continue;
+    }
+    let fill = (a + b) % 2 === 0 ? '#d2b070' : '#c9a566';
+    if (id === GOAL) fill = '#8fd16f';
+    h += `<polygon class="cell" data-a="${a}" data-b="${b}" points="${poly(a, b)}" fill="${fill}" stroke="#14110c" stroke-width=".6"><title>${a},${b}</title></polygon>`;
+  }
+  for (const id of cur.w) { const a = (id / N) | 0, b = id % N; h += `<polygon points="${poly(a, b, .85)}" fill="#7a5a2e" stroke="#2c1f0e" stroke-width="1" pointer-events="none"/>`; }
+  planned.forEach((c, id) => { const a = (id / N) | 0, b = id % N; h += `<polygon points="${poly(a, b, .85)}" fill="#e2674d" stroke="#3a120a" stroke-width="1" pointer-events="none"/><text x="${SX(a, b)}" y="${SY(a, b) + 3.5}" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" pointer-events="none">${c}</text>`; });
+  if (res) {
+    const pts = [cur.p].concat(res.steps.map(s => s.p));
+    h += `<polyline points="${pts.map(p => SX(p[0], p[1]) + ',' + SY(p[0], p[1])).join(' ')}" fill="none" stroke="#f3e9d2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="1 0" pointer-events="none"/>`;
+    res.steps.forEach((s, i) => { h += `<circle cx="${SX(s.p[0], s.p[1])}" cy="${SY(s.p[0], s.p[1])}" r="4" fill="#14110c" stroke="#f3e9d2" stroke-width="1.5" pointer-events="none"/>`; });
+  }
+  h += `<polygon points="${poly(cur.p[0], cur.p[1], .9)}" fill="#4aa3e8" stroke="#fff" stroke-width="1.5" pointer-events="none"/>`;
+  $('map').innerHTML = h;
+}
+
+function applyAct(p, c, a) {
+  if (a.act === 'PASSE') return [p, Math.max(c - 1, 0)];
+  if (a.act === 'RAPIDE') { let q = p; for (const d of a.dirs) q = [q[0] + DV[d][0], q[1] + DV[d][1]]; return [q, CDLEN - 1]; }
+  return [[p[0] + DV[a.act][0], p[1] + DV[a.act][1]], Math.max(c - 1, 0)];
+}
+// état réel au compteur courant: départ + coups joués + tirs saisis
+function curState() {
+  let p = st.pos.slice(), w = st.walls.slice().sort((u, v) => u - v), arr = Object.assign({}, st.arr), c = st.cd, missing = -1;
+  st.hist.forEach((a, i) => {
+    [p, c] = applyAct(p, c, a);
+    const f = st.tl[i];
+    if (f) { const [wd, na] = fireArr(arr, f); w = addWall(w, p, wd)[0]; arr = na; } else if (missing < 0) missing = i;
+  });
+  return { p, w, arr, c, missing };
+}
+function rebase() {
+  const h = st.hist.length; if (!h) return;
+  const cur = curState();
+  st.pos = cur.p; st.walls = cur.w; st.arr = cur.arr; st.cd = cur.c;
+  st.c0 += h; st.tl = st.tl.slice(h).concat(Array(h).fill(null)); st.hist = [];
+}
+const planCache = new Map();
+function firesFrom(h) { const f = []; for (let j = h; j < NS && st.tl[j]; j++) f.push(st.tl[j]); return f; }
+let planJob = 0, planTimer = null;
+const planKey = (cur, fires) => JSON.stringify([cur.p, cur.w, cur.arr, cur.c, fires]);
+// calcul par tranches de 30 ms pour que la page reste fluide
+function planAsync(cur, fires, cb) {
+  const key = planKey(cur, fires);
+  if (planCache.has(key)) { cb(planCache.get(key)); return; }
+  const job = ++planJob;
+  const g = planGen(cur.p, cur.w, cur.arr, fires, cur.c);
+  (function step() {
+    if (job !== planJob) return;
+    const t0 = performance.now(); let r;
+    do { r = g.next(); } while (!r.done && performance.now() - t0 < 30);
+    if (!r.done) { setTimeout(step, 0); return; }
+    if (planCache.size > 40) planCache.clear();
+    planCache.set(key, r.value); cb(r.value);
+  })();
+}
+
+function showPlan(res, cur, fires, base) {
+  const box = $('orders');
+  st.last = res;
+  if (!res) { box.innerHTML = ''; $('ordnote').innerHTML = '<span class="warn">Aucun chemin avec ces murs. Vérifie les états saisis et les murs vus.</span>'; $('done').disabled = true; drawMap(null, cur, base); return; }
+  const m = res.steps.length;
+  box.innerHTML = res.steps.map((s, i) => {
+    const [w, sub, cls] = wordFor(s);
+    const arrow = s.act === 'PASSE' ? '⏸' : s.act === 'RAPIDE' ? '⚡' : ARROW[s.act];
+    return `<div class="o ${cls} ${i === 0 ? 'now' : i >= 3 ? 'sm' : ''}"><div class="n">compteur<b>${base + i}</b></div><div class="a">${arrow}</div><div class="t">${w}<small>${sub}</small><span class="exp">Après ton coup, le chat dit: sort de l'état ${fires[i]}</span></div></div>`;
+  }).join('');
+  const left = res.score[0];
+  $('ordnote').textContent = left === 0 ? `Sortie atteinte au compteur ${base + m - 1}.`
+    : `Après le compteur ${base + m - 1}: ${left} cases restantes.` + (m === fires.length && fires.length < NS ? ' Ensuite, relis la liste du jeu et saisis la suite avec « Nouvelle liste ».' : '');
+  $('done').disabled = !m;
+  drawMap(res, cur, base);
+}
+
+function render(defer) {
+  const h = st.hist.length, base = st.c0 + h;
+  const cur = curState();
+  $('cv').textContent = base; $('dv').textContent = cur.c;
+  $('m-pos').setAttribute('aria-pressed', st.mode === 'pos'); $('m-wall').setAttribute('aria-pressed', st.mode === 'wall'); $('m-edit').setAttribute('aria-pressed', st.mode === 'edit');
+  $('editbox').hidden = st.mode !== 'edit';
+  if (st.mode === 'edit') $('mapTxt').value = mapToText();
+  // colonnes
+  document.querySelectorAll('.col').forEach(c => { const i = +c.dataset.i; c.querySelector('b').textContent = st.c0 + i; c.classList.toggle('past', i < h); });
+  document.querySelectorAll('.st').forEach(b => { const on = st.tl[+b.dataset.i] === b.dataset.s; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  const fires = firesFrom(h), n = fires.length;
+  let n0 = 0; while (n0 < NS && st.tl[n0]) n0++;
+  const filled = st.tl.filter(Boolean).length;
+  const gn = $('gridnote');
+  if (cur.missing >= 0) { gn.className = 'note warn'; gn.textContent = `Le tir du compteur ${st.c0 + cur.missing} n'est pas renseigné: les murs de ce tour sont inconnus. Clique son état.`; }
+  else if (filled > n0) { gn.className = 'note warn'; gn.textContent = `La colonne « dans ${n0 + 1} » est vide. Le plan s'arrête avant, remplis-la.`; }
+  else { gn.className = 'note'; gn.textContent = `${filled}/${NS} états renseignés.`; }
+  // vérification du dernier tir
+  const chk = $('chk');
+  if (h > 0 && st.tl[h - 1]) {
+    chk.hidden = false;
+    chk.innerHTML = `Tir du compteur ${base - 1}: le chat doit avoir dit « sort de l'état <b class="exp">${st.tl[h - 1]}</b> ». Autre chose ? <span class="pick">` +
+      ['Sang', 'Sel', 'Or'].map(x => `<button type="button" data-s="${x}" class="${st.tl[h - 1] === x ? 'on' : ''}">${x}</button>`).join('') + '</span>';
+  } else chk.hidden = true;
+  $('done').textContent = `Joué ✓ (compteur ${base})`;
+  $('undo').disabled = !h;
+  // plan
+  planJob++; clearTimeout(planTimer);
+  st.last = null; $('done').disabled = true; $('orders').innerHTML = '';
+  for (const k in st.arr) { const sl = $('k-' + k); if (sl) sl.value = st.arr[k]; }
+  drawMap(null, cur, base);
+  if (cur.p[0] * N + cur.p[1] === GOAL) { $('ordnote').textContent = 'Tu es sur la sortie.'; return; }
+  if (!n) { $('ordnote').innerHTML = h ? `Plus aucun état connu à partir du compteur ${base}: relis la liste du jeu, clique « Nouvelle liste » puis saisis-la.` : 'Renseigne au moins la colonne « dans 1 ».'; return; }
+  $('ordnote').textContent = 'Calcul…';
+  const go = () => planAsync(cur, fires, res => showPlan(res, cur, fires, base));
+  if (defer) planTimer = setTimeout(go, 450); else go();
+}
+
+$('c-').onclick = () => { rebase(); st.c0 = Math.max(2, st.c0 - 1); render(); };
+$('c+').onclick = () => { rebase(); st.c0++; render(); };
+$('d-').onclick = () => { rebase(); st.cd = Math.max(0, st.cd - 1); render(); };
+$('d+').onclick = () => { rebase(); st.cd = Math.min(10, st.cd + 1); render(); };
+$('m-pos').onclick = () => { st.mode = 'pos'; render(); };
+$('m-wall').onclick = () => { st.mode = 'wall'; render(); };
+$('m-edit').onclick = () => { st.mode = 'edit'; render(); };
+
+// carte en texte: une ligne par b (de 18 en haut à 0 en bas), une colonne par a (0 à 18); # = sol, . = vide
+function mapToText() {
+  let s = '';
+  for (let b = N - 1; b >= 0; b--) { for (let a = 0; a < N; a++) s += (a * N + b === GOAL ? 'G' : Fset.has(a * N + b) ? '#' : '.'); s += '\n'; }
+  return s.trim();
+}
+function textToMap(txt) {
+  const rows = txt.split(/\r?\n/).map(r => r.trim()).filter(Boolean);
+  if (rows.length !== N || rows.some(r => r.length !== N)) return false;
+  const ids = [];
+  rows.forEach((r, i) => { const b = N - 1 - i; for (let a = 0; a < N; a++) if (r[a] === '#' || r[a] === 'G') ids.push(a * N + b); });
+  ids.push(1, GOAL); // départ (0,1) et sortie toujours sol
+  Fset = new Set(ids); return true;
+}
+function saveMap() { try { localStorage.setItem('ame-map-v2', JSON.stringify([...Fset])); } catch (e) {} }
+function loadMap() { try { const v = JSON.parse(localStorage.getItem('ame-map-v2')); if (Array.isArray(v) && v.length > 20) Fset = new Set(v); } catch (e) {} }
+$('mt-apply').onclick = () => { if (textToMap($('mapTxt').value)) { saveMap(); render(); } else $('mapTxt').value = 'Il faut 19 lignes de 19 caractères (# sol, . vide).\n\n' + mapToText(); };
+$('mt-copy').onclick = () => { const x = $('mapTxt'); x.select(); try { navigator.clipboard.writeText(x.value); } catch (e) {} };
+$('mt-orig').onclick = () => { setFloor(ORIG); saveMap(); render(); };
+$('map').onclick = e => {
+  const c = e.target.closest('.cell'); if (!c) return;
+  const a = +c.dataset.a, b = +c.dataset.b, id = a * N + b;
+  if (st.mode === 'edit') {
+    if (id === GOAL || (a === 0 && b === 1)) return;
+    if (Fset.has(id)) Fset.delete(id); else Fset.add(id);
+    saveMap(); render(); return;
+  }
+  if (!Fset.has(id)) return;
+  rebase();
+  if (st.mode === 'pos') { st.pos = [a, b]; st.walls = st.walls.filter(w => w !== id); }
+  else { if (id === st.pos[0] * N + st.pos[1]) return; st.walls = st.walls.includes(id) ? st.walls.filter(w => w !== id) : st.walls.concat([id]); }
+  render();
+};
+$('next').onclick = () => { rebase(); st.tl = Array(NS).fill(null); st.mode = 'pos'; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+$('done').onclick = () => {
+  const r = st.last; if (!r || !r.steps.length) return;
+  const s0 = r.steps[0];
+  st.hist.push({ act: s0.act, dirs: s0.dirs });
+  const cur2 = curState(), f2 = firesFrom(st.hist.length);
+  // le reste du plan reste valable: on le réutilise sans recalcul
+  if (cur2.missing < 0 && cur2.p.join() === s0.p.join()) planCache.set(planKey(cur2, f2), { score: r.score, steps: r.steps.slice(1), final: r.final, arr: r.arr });
+  render();
+};
+$('undo').onclick = () => { st.hist.pop(); render(); };
+$('alt').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const a = b.dataset.a, cur = curState();
+  if (a !== 'PASSE') { const x = cur.p[0] + DV[a][0], y = cur.p[1] + DV[a][1]; if (!inF(x, y) || cur.w.includes(x * N + y)) return; }
+  st.hist.push({ act: a }); render();
+};
+$('chk').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  st.tl[st.hist.length - 1] = b.dataset.s; render();
+};
+$('reset').onclick = () => { Object.assign(st, { c0: 2, cd: 0, pos: [0, 1], walls: [], arr: Object.assign({}, START_ARR), tl: Array(NS).fill(null), hist: [], last: null }); render(); };
+
+loadMap(); buildGrid(); buildCorners(); render();
+</script>
+</body>
+</html>
