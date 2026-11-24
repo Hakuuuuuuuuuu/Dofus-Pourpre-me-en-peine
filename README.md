@@ -4,7 +4,7 @@ Outil pour passer le **Labyrinthe des âmes** (quête « Une âme en peine », D
 
 Une seule page HTML, sans installation: ouvre `index.html` dans ton navigateur, ou le lien direct ci-dessous.
 
-**Lien direct:** https://hakuuuuuuuuuu.github.io/dofus-ame-en-peine/
+**Lien direct:** https://hakuuuuuuuuuu.github.io/Dofus-Pourpre-me-en-peine/
 
 ![Saisie des états](docs/saisie.png)
 
