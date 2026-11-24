@@ -18,8 +18,8 @@ Une seule page HTML, sans installation: ouvre `index.html` dans ton navigateur, 
 
 ### Pas à pas
 
-1. **Passe ton premier tour** (compteur 1) sans rien faire.
-2. **Au compteur 2**, fais un **clic droit sur le Minogolem séculaire**. Sa fiche s'ouvre: la liste « Effets déclenchés » donne ses états.
+1. **Au premier tour** (compteur 1), **déplace-toi d'une case vers le haut à gauche (↖)**, puis **passe ton tour**. Une fois ce premier tour passé, les effets du Minogolem apparaissent.
+2. **Au compteur 2**, fais un **clic droit sur le Minogolem séculaire**. Sa fiche s'ouvre: la liste « Effets déclenchés » donne ses états. Vérifie que ta case réelle correspond à la case bleue de la carte de l'outil, sinon clique « Ma case » puis ta vraie case.
 3. **Passe la souris sur chaque ligne « État … »**. L'infobulle indique « dans N ». Dans la grille « 1. Quel état à quel tour », clique, sous la colonne « dans N », l'état de cette ligne.
    - L'ordre d'affichage de la liste du jeu n'est **pas** l'ordre de déclenchement. Seul le « dans N » compte.
    - Lis **toutes** les lignes. Remplis les colonnes sans trou: une colonne vide arrête le plan.
